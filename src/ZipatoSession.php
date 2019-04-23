@@ -40,8 +40,8 @@ class ZipatoSession implements ZipatoSessionInterface
     protected $sessionId;
 
     /**
-     * @param HttpClientInterface|NULL $httpClient
      * @param string $endpoint
+     * @param HttpClientInterface|NULL $httpClient
      */
     public function __construct(string $endpoint = null, HttpClientInterface $httpClient = null)
     {
