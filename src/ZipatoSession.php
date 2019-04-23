@@ -12,7 +12,7 @@ class ZipatoSession implements ZipatoSessionInterface
     /**
      * @var string
      */
-    const ENDPOINT = 'https://my.zipato.com/zipato-web/v2';
+    protected $endpoint;
 
     /**
      * @var string
@@ -41,12 +41,19 @@ class ZipatoSession implements ZipatoSessionInterface
 
     /**
      * @param HttpClientInterface|NULL $httpClient
+     * @param string $endpoint
      */
-    public function __construct(HttpClientInterface $httpClient = NULL)
+    public function __construct(string $endpoint = null, HttpClientInterface $httpClient = null)
     {
-        if (!$httpClient) {
+        if (!$endpoint)
+        {
+            $endpoint = 'https://my.zipato.com/zipato-web/v2';
+        }
+        if (!$httpClient)
+        {
             $httpClient = HttpClient::create();
         }
+        $this->endpoint = $endpoint;
         $this->httpClient = $httpClient;
     }
 
@@ -162,7 +169,7 @@ class ZipatoSession implements ZipatoSessionInterface
         if ($queryArray) {
             $queryString = '?' . http_build_query($queryArray);
         }
-        return static::ENDPOINT . $path . $queryString;
+        return $this->endpoint . $path . $queryString;
     }
 
     /**
