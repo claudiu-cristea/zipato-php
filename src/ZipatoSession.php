@@ -22,12 +22,12 @@ class ZipatoSession implements ZipatoSessionInterface
     /**
      * @var string
      */
-    protected $passHash;
+    protected $sha;
 
     /**
      * @var string
      */
-    protected $serial;
+    protected $serialNumber;
 
     /**
      * @var HttpClientInterface
@@ -40,16 +40,10 @@ class ZipatoSession implements ZipatoSessionInterface
     protected $sessionId;
 
     /**
-     * @param string $mail
-     * @param string $passHash
-     * @param string $serial
      * @param HttpClientInterface|NULL $httpClient
      */
-    public function __construct(string $mail, string $passHash, string $serial, HttpClientInterface $httpClient = NULL)
+    public function __construct(HttpClientInterface $httpClient = NULL)
     {
-        $this->mail = $mail;
-        $this->passHash = $passHash;
-        $this->serial = $serial;
         if (!$httpClient) {
             $httpClient = HttpClient::create();
         }
@@ -59,15 +53,56 @@ class ZipatoSession implements ZipatoSessionInterface
     /**
      * {@inheritDoc}
      */
+    public function setMail(string $mail): ZipatoSessionInterface
+    {
+        $this->mail = $mail;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSha(string $sha): ZipatoSessionInterface
+    {
+        $this->sha = $sha;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setSerialNumber(string $serialNumber): ZipatoSessionInterface
+    {
+        $this->serialNumber = $serialNumber;
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function login(): void
     {
+        if (empty($this->mail))
+        {
+            throw new \Exception('The mail is not set.');
+        }
+        if (empty($this->sha))
+        {
+            throw new \Exception('The SHA is not set.');
+        }
+        if (empty($this->serialNumber))
+        {
+            throw new \Exception('The serial number is not set.');
+        }
+
         $response = $this->get('/user/init');
         $this->sessionId = $response->jsessionid;
-        $token = sha1($response->nonce . $this->passHash);
+        $token = sha1($response->nonce . $this->sha);
 
         $response = $this->get('/user/login', [
             'username' => $this->mail,
             'token' => $token,
+            'serial' => $this->serialNumber,
         ]);
 
         if (empty($response->success)) {

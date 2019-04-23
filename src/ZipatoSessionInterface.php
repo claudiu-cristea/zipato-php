@@ -7,6 +7,27 @@ namespace Zipato;
 interface ZipatoSessionInterface
 {
     /**
+     * @param string $mail
+     *
+     * @return $this
+     */
+    public function setMail(string $mail): self;
+
+    /**
+     * @param string $sha
+     *
+     * @return $this
+     */
+    public function setSha(string $sha): self;
+
+    /**
+     * @param string $serialNumber
+     *
+     * @return $this
+     */
+    public function setSerialNumber(string $serialNumber): self;
+
+    /**
      * @throws \Exception
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
