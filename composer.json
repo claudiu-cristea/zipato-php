@@ -2,5 +2,15 @@
     "name": "claudiu_cristea/zipato-php",
     "description": "PHP Zipato API Integartion",
     "type": "library",
-    "license": "MIT"
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Zipato\\": "src"
+        }
+    },
+    "require": {
+        "ext-json": "*",
+        "symfony/http-client": "*"
+    }
 }
