@@ -58,9 +58,29 @@ interface ZipatoSessionInterface
 
     /**
      * @param string $path
+     * @param array $queryArray
      * @param array $bodyArray
      * @param string|null $uuid
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function put(string $path, array $bodyArray = [], string $uuid = null): void;
+    public function put(string $path, array $queryArray = [], array $bodyArray = [], string $uuid = null): void;
+
+    /**
+     * @param string $path
+     * @param array $queryArray
+     * @param array $bodyArray
+     * @param string|null $uuid
+     * @return mixed
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public function post(string $path, array $queryArray = [], array $bodyArray = [], string $uuid = null);
+
+    /**
+     * @param string $path
+     * @param array $queryArray
+     * @param string|null $uuid
+     * @return mixed
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public function delete(string $path, array $queryArray = [], string $uuid = null);
 }

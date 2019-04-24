@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Zipato;
 
+use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -102,15 +103,28 @@ class ZipatoSession implements ZipatoSessionInterface
             throw new \Exception('The serial number is not set.');
         }
 
+        if ($this->sessionId)
+        {
+            // The user is already logged in.
+            return;
+        }
         $response = $this->get('/user/init');
         $this->sessionId = $response->jsessionid;
         $token = sha1($response->nonce . $this->sha);
 
-        $response = $this->get('/user/login', [
-            'username' => $this->mail,
-            'token' => $token,
-            'serial' => $this->serialNumber,
-        ]);
+        try {
+            $response = $this->get('/user/login', [
+                'username' => $this->mail,
+                'token' => $token,
+                'serial' => $this->serialNumber,
+            ]);
+        } catch (ClientException $exception) {
+            if ($exception->getResponse()->getStatusCode() === 403) {
+                // The user was already logged-in.
+                return;
+            }
+            throw $exception;
+        }
 
         if (empty($response->success)) {
             throw new \Exception("Login failed.");
@@ -123,6 +137,7 @@ class ZipatoSession implements ZipatoSessionInterface
     public function logout(): void
     {
         $this->get('/user/logout');
+        unset($this->sessionId);
     }
 
     /**
@@ -141,7 +156,7 @@ class ZipatoSession implements ZipatoSessionInterface
     /**
      * {@inheritDoc}
      */
-    public function put(string $path, array $bodyArray = [], string $uuid = null): void
+    public function put(string $path,  array $queryArray = [], array $bodyArray = [], string $uuid = null): void
     {
         $body = json_encode($bodyArray);
         $headers = [
@@ -154,6 +169,22 @@ class ZipatoSession implements ZipatoSessionInterface
             'body' => $body,
         ];
         $this->httpClient->request('PUT', $this->buildUrl($path, $uuid), $options);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function post(string $path, array $queryArray = [], array $bodyArray = [], string $uuid = null)
+    {
+        throw new \Exception("POST is not yet implemented.");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function delete(string $path, array $queryArray = [], string $uuid = null)
+    {
+        throw new \Exception("DELETE is not yet implemented.");
     }
 
     /**
