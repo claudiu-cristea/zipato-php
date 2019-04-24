@@ -1,6 +1,6 @@
 {
     "name": "claudiu-cristea/zipato-php",
-    "description": "PHP Zipato API Integartion",
+    "description": "PHP Zipato API Integration",
     "type": "library",
     "license": "MIT",
     "minimum-stability": "dev",
